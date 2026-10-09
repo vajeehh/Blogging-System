@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BlogSpace - Login</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <header class="navbar">
+        <div class="logo">BlogSpace</div>
+
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="signup.html">Sign Up</a>
+        </nav>
+    </header>
+
+    <main class="auth-page">
+
+        <div class="auth-card">
+
+            <p class="tagline">WELCOME BACK</p>
+
+            <h1>Login to <span>BlogSpace</span></h1>
+
+            <p class="auth-subtitle">
+                Continue sharing your stories with the community.
+            </p>
+
+            <!-- Logout Message -->
+            <p id="logoutMessage" class="form-message"></p>
+
+            <form id="loginForm">
+
+                <div class="form-group">
+                    <label for="email">Email</label>
+
+                    <input type="email" id="email" placeholder="Enter your email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+
+                    <input type="password" id="password" placeholder="Enter your password" required>
+                </div>
+
+                <button type="submit" class="btn full-btn">
+                    Login
+                </button>
+
+                <p id="message" class="form-message"></p>
+
+            </form>
+
+            <p class="switch-auth">
+                Don't have an account?
+                <a href="signup.html">Create one</a>
+            </p>
+
+        </div>
+
+    </main>
+
+    <script>
+
+        const API_URL = "http://localhost:3000";
+
+        const loginForm =
+            document.getElementById("loginForm");
+
+        const message =
+            document.getElementById("message");
+
+        const logoutMessage =
+            document.getElementById("logoutMessage");
+
+
+        // ==============================
+        // LOGOUT MESSAGE
+        // ==============================
+
+        const savedLogoutMessage =
+            sessionStorage.getItem("logoutMessage");
+
+        if (savedLogoutMessage) {
+
+            logoutMessage.textContent =
+                savedLogoutMessage;
+
+            logoutMessage.className =
+                "form-message success";
+
+            sessionStorage.removeItem(
+                "logoutMessage"
+            );
+        }
+
+
+        // ==============================
+        // LOGIN
+        // ==============================
+
+        loginForm.addEventListener(
+            "submit",
+            async (event) => {
+
+                event.preventDefault();
+
+                const email =
+                    document.getElementById("email").value.trim();
+
+                const password =
+                    document.getElementById("password").value;
+
+
+                try {
+
+                    const response =
+                        await fetch(
+                            `${API_URL}/auth/login`,
+                            {
+                                method: "POST",
+
+                                headers: {
+                                    "Content-Type":
+                                        "application/json"
+                                },
+
+                                body: JSON.stringify({
+                                    email,
+                                    password
+                                })
+                            }
+                        );
+
+
+                    const data =
+                        await response.json();
+
+
+                    if (!response.ok) {
+
+                        message.textContent =
+                            data.message ||
+                            "Invalid email or password.";
+
+                        message.className =
+                            "form-message error";
+
+                        return;
+                    }
+
+
+                    // Save login information
+                    localStorage.setItem(
+                        "token",
+                        data.token
+                    );
+
+                    localStorage.setItem(
+                        "user",
+                        JSON.stringify(data.user)
+                    );
+
+
+                    // Login success message
+                    message.textContent =
+                        "Login successful!";
+
+                    message.className =
+                        "form-message success";
+
+
+                    setTimeout(
+                        () => {
+
+                            window.location.href =
+                                "dashboard.html";
+
+                        },
+                        800
+                    );
+
+
+                } catch (error) {
+
+                    console.error(error);
+
+                    message.textContent =
+                        "Unable to connect to server.";
+
+                    message.className =
+                        "form-message error";
+
+                }
+
+            }
+        );
+
+    </script>
+
+</body>
+
+</html>

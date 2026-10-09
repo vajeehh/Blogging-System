@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BlogSpace - Sign Up</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <header class="navbar">
+        <div class="logo">BlogSpace</div>
+
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="login.html">Login</a>
+        </nav>
+    </header>
+
+    <main class="auth-page">
+
+        <div class="auth-card">
+            <p class="tagline">JOIN THE COMMUNITY</p>
+
+            <h1>Create your <span>Account</span></h1>
+
+            <p class="auth-subtitle">
+                Start writing and share your stories with the world.
+            </p>
+
+            <form id="signupForm">
+
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="text" id="name" placeholder="Enter your name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" placeholder="Enter your email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="Create a password" required>
+                </div>
+
+                <button type="submit" class="btn full-btn">
+                    Create Account
+                </button>
+
+                <p id="message" class="form-message"></p>
+
+            </form>
+
+            <p class="switch-auth">
+                Already have an account?
+                <a href="login.html">Login</a>
+            </p>
+
+        </div>
+
+    </main>
+
+    <script>
+        const API_URL = "http://localhost:3000";
+
+        const signupForm = document.getElementById("signupForm");
+        const message = document.getElementById("message");
+
+        signupForm.addEventListener("submit", async (event) => {
+            event.preventDefault();
+
+            const name = document.getElementById("name").value;
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+
+            try {
+                const response = await fetch(`${API_URL}/auth/signup`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        name,
+                        email,
+                        password
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    message.textContent = data.message;
+                    message.className = "form-message error";
+                    return;
+                }
+
+                message.textContent = "Account created successfully!";
+                message.className = "form-message success";
+
+                signupForm.reset();
+
+                setTimeout(() => {
+                    window.location.href = "login.html";
+                }, 1000);
+
+            } catch (error) {
+                message.textContent = "Unable to connect to server.";
+                message.className = "form-message error";
+            }
+        });
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,669 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --navy: #08111f;
+  --navy-light: #101d31;
+  --gold: #d4af37;
+  --gold-light: #f0d477;
+  --white: #ffffff;
+  --text: #d8dee8;
+  --muted: #8994a6;
+  --border: rgba(255, 255, 255, 0.1);
+  --card: rgba(255, 255, 255, 0.05);
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background: var(--navy);
+  color: var(--white);
+  min-height: 100vh;
+  line-height: 1.6;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ==============================
+   NAVBAR
+============================== */
+
+.navbar {
+  height: 75px;
+  padding: 0 8%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+  background: rgba(8, 17, 31, 0.95);
+}
+
+.logo {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--gold);
+  letter-spacing: 1px;
+}
+
+.navbar nav {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+.navbar nav a {
+  color: var(--text);
+  font-size: 14px;
+  transition: 0.3s;
+}
+
+.navbar nav a:hover {
+  color: var(--gold);
+}
+
+.nav-btn {
+  background: transparent;
+  border: 1px solid var(--gold);
+  color: var(--gold);
+  padding: 8px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.nav-btn:hover {
+  background: var(--gold);
+  color: var(--navy);
+}
+
+/* ==============================
+   HERO
+============================== */
+
+.hero {
+  min-height: 560px;
+  display: flex;
+  align-items: center;
+  padding: 80px 8%;
+  background:
+    radial-gradient(
+      circle at 80% 30%,
+      rgba(212, 175, 55, 0.12),
+      transparent 35%
+    );
+}
+
+.hero-content {
+  max-width: 700px;
+}
+
+.tagline {
+  color: var(--gold);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  margin-bottom: 15px;
+}
+
+.hero h1 {
+  font-size: clamp(48px, 7vw, 82px);
+  line-height: 1.05;
+  margin-bottom: 25px;
+}
+
+.hero h1 span,
+.auth-card h1 span,
+.dashboard h1 span {
+  color: var(--gold);
+}
+
+.hero-text {
+  max-width: 560px;
+  color: var(--muted);
+  font-size: 18px;
+  margin-bottom: 35px;
+}
+
+/* ==============================
+   BUTTONS
+============================== */
+
+.btn {
+  display: inline-block;
+  border: none;
+  background: var(--gold);
+  color: var(--navy);
+  padding: 13px 25px;
+  border-radius: 6px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.btn:hover {
+  background: var(--gold-light);
+  transform: translateY(-2px);
+}
+
+.full-btn {
+  width: 100%;
+}
+
+/* ==============================
+   POSTS
+============================== */
+
+.posts-section,
+.my-posts {
+  padding: 80px 8%;
+}
+
+.section-heading {
+  margin-bottom: 40px;
+}
+
+.section-heading h2 {
+  font-size: 36px;
+}
+
+.posts-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 25px;
+}
+
+.post-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 28px;
+  transition: 0.3s;
+}
+
+.post-card:hover {
+  border-color: rgba(212, 175, 55, 0.5);
+  transform: translateY(-5px);
+}
+
+.post-meta {
+  color: var(--gold);
+  font-size: 12px;
+  margin-bottom: 12px;
+}
+
+.post-card h3 {
+  font-size: 22px;
+  margin-bottom: 12px;
+}
+
+.post-card p {
+  color: var(--muted);
+  margin-bottom: 20px;
+}
+
+.read-more {
+  color: var(--gold);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+/* ==============================
+   EMPTY STATE
+============================== */
+
+.empty-state {
+  padding: 50px;
+  text-align: center;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  color: var(--muted);
+}
+
+.loading {
+  color: var(--muted);
+}
+
+/* ==============================
+   AUTHENTICATION
+============================== */
+
+.auth-page {
+  min-height: calc(100vh - 75px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 60px 20px;
+  background:
+    radial-gradient(
+      circle at 50% 20%,
+      rgba(212, 175, 55, 0.1),
+      transparent 35%
+    );
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 460px;
+  padding: 45px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  backdrop-filter: blur(15px);
+}
+
+.auth-card h1 {
+  font-size: 36px;
+  margin-bottom: 12px;
+}
+
+.auth-subtitle {
+  color: var(--muted);
+  margin-bottom: 30px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 13px 15px;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  color: var(--white);
+  outline: none;
+  font-size: 15px;
+}
+
+.form-group textarea {
+  resize: vertical;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  border-color: var(--gold);
+}
+
+.switch-auth {
+  text-align: center;
+  color: var(--muted);
+  margin-top: 25px;
+  font-size: 14px;
+}
+
+.switch-auth a {
+  color: var(--gold);
+}
+
+.form-message {
+  margin-top: 15px;
+  text-align: center;
+  font-size: 14px;
+}
+
+.form-message.success {
+  color: #58d68d;
+}
+
+.form-message.error {
+  color: #ff6b6b;
+}
+
+/* ==============================
+   DASHBOARD
+============================== */
+
+.dashboard {
+  padding: 70px 8%;
+}
+
+.dashboard-header {
+  margin-bottom: 50px;
+}
+
+.dashboard h1 {
+  font-size: 44px;
+  margin-bottom: 8px;
+}
+
+.dashboard-header p:not(.tagline) {
+  color: var(--muted);
+}
+
+.editor-section {
+  max-width: 900px;
+  margin-bottom: 80px;
+}
+
+.editor-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 35px;
+}
+
+.editor-card h2 {
+  margin-bottom: 25px;
+}
+
+.editor-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.cancel-btn,
+.edit-btn,
+.delete-btn {
+  border: none;
+  border-radius: 6px;
+  padding: 10px 17px;
+  cursor: pointer;
+}
+
+.cancel-btn {
+  background: #273449;
+  color: var(--white);
+}
+
+.post-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.edit-btn {
+  background: rgba(212, 175, 55, 0.15);
+  color: var(--gold);
+}
+
+.delete-btn {
+  background: rgba(255, 107, 107, 0.12);
+  color: #ff6b6b;
+}
+
+/* ==============================
+   SINGLE POST
+============================== */
+
+.single-post-page {
+  padding: 80px 8%;
+}
+
+.single-post {
+  max-width: 850px;
+  margin: auto;
+}
+
+.post-header {
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 35px;
+  margin-bottom: 35px;
+}
+
+.post-header h1 {
+  font-size: clamp(40px, 6vw, 64px);
+  line-height: 1.1;
+  margin-bottom: 20px;
+}
+
+.post-author,
+.post-date {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.post-content {
+  color: var(--text);
+  font-size: 18px;
+  line-height: 1.9;
+}
+
+.post-content p {
+  margin-bottom: 22px;
+}
+
+.back-link {
+  display: inline-block;
+  color: var(--gold);
+  margin-top: 40px;
+}
+
+/* ==============================
+   COMMENTS
+============================== */
+
+.comments-section {
+  max-width: 850px;
+  margin: 80px auto;
+  padding: 0 8%;
+}
+
+.comment-form {
+  margin-bottom: 30px;
+}
+
+.comment-form label {
+  display: block;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+/* Select Post */
+
+.comment-form select {
+  width: 100%;
+  padding: 13px 15px;
+  margin-bottom: 20px;
+  background: var(--navy-light);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--white);
+  outline: none;
+  font-size: 15px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.comment-form select:hover {
+  border-color: rgba(212, 175, 55, 0.5);
+}
+
+.comment-form select:focus {
+  border-color: var(--gold);
+}
+
+.comment-form select option {
+  background: var(--navy-light);
+  color: var(--white);
+}
+
+/* Comment Textarea */
+
+.comment-form textarea {
+  width: 100%;
+  padding: 15px;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--white);
+  outline: none;
+  font-size: 15px;
+  resize: vertical;
+  margin-bottom: 15px;
+  transition: 0.3s;
+}
+
+.comment-form textarea:focus {
+  border-color: var(--gold);
+}
+
+/* Login Message */
+
+.comment-login-message {
+  color: var(--muted);
+  margin-bottom: 30px;
+}
+
+.comment-login-message a {
+  color: var(--gold);
+}
+
+/* Comments List */
+
+.comments-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* Comment Card */
+
+.comment-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px;
+  transition: 0.3s;
+}
+
+.comment-card:hover {
+  border-color: rgba(212, 175, 55, 0.35);
+}
+
+/* Comment Header */
+
+.comment-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  margin-bottom: 10px;
+}
+
+.comment-header strong {
+  color: var(--gold);
+}
+
+.comment-header span {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+/* Comment Content */
+
+.comment-content {
+  color: var(--text);
+  margin-bottom: 12px;
+}
+
+/* Delete Comment */
+
+.delete-comment-btn {
+  border: none;
+  background: rgba(255, 107, 107, 0.12);
+  color: #ff6b6b;
+  padding: 7px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.delete-comment-btn:hover {
+  background: rgba(255, 107, 107, 0.2);
+}
+
+/* ==============================
+   FOOTER
+============================== */
+
+footer {
+  border-top: 1px solid var(--border);
+  padding: 25px 8%;
+  text-align: center;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+/* ==============================
+   RESPONSIVE
+============================== */
+
+@media (max-width: 900px) {
+
+  .posts-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .hero {
+    min-height: 500px;
+  }
+
+}
+
+@media (max-width: 600px) {
+
+  .navbar {
+    padding: 0 5%;
+  }
+
+  .navbar nav {
+    gap: 12px;
+  }
+
+  .navbar nav a {
+    font-size: 12px;
+  }
+
+  .hero,
+  .posts-section,
+  .my-posts,
+  .dashboard,
+  .single-post-page {
+    padding-left: 5%;
+    padding-right: 5%;
+  }
+
+  .posts-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .auth-card {
+    padding: 30px 22px;
+  }
+
+  .auth-card h1 {
+    font-size: 30px;
+  }
+
+  .dashboard h1 {
+    font-size: 34px;
+  }
+
+  .hero h1 {
+    font-size: 50px;
+  }
+
+  .comments-section {
+    padding-left: 5%;
+    padding-right: 5%;
+  }
+
+  .comment-header {
+    flex-direction: column;
+    gap: 5px;
+  }
+
+}

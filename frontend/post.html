@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>BlogSpace - Post</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <header class="navbar">
+
+        <div class="logo">
+            BlogSpace
+        </div>
+
+        <nav>
+
+            <a href="index.html">
+                Home
+            </a>
+
+            <a href="login.html" id="loginLink">
+                Login
+            </a>
+
+            <a href="signup.html" id="signupLink">
+                Sign Up
+            </a>
+
+            <button type="button" id="logoutBtn" class="nav-btn" style="display: none;">
+                Logout
+            </button>
+
+        </nav>
+
+    </header>
+
+
+    <main class="single-post-page">
+
+        <!-- POST -->
+
+        <article id="postContainer" class="single-post">
+
+            <p class="loading">
+                Loading post...
+            </p>
+
+        </article>
+
+
+        <!-- COMMENTS -->
+
+        <section id="commentsSection" class="comments-section">
+
+            <div class="section-heading">
+
+                <p class="tagline">
+                    COMMUNITY
+                </p>
+
+                <h2>
+                    Comments
+                </h2>
+
+            </div>
+
+
+            <!-- SELECT POST -->
+
+            <div id="postSelectContainer" class="comment-form" style="display: none;">
+
+                <label for="postSelect">
+                    Select Post
+                </label>
+
+                <select id="postSelect">
+
+                    <option value="">
+                        Select a post
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- COMMENT FORM -->
+
+            <div id="commentFormContainer" class="comment-form" style="display: none;">
+
+                <textarea id="commentInput" placeholder="Write your comment..." rows="4"></textarea>
+
+
+                <button type="button" id="addCommentBtn" class="btn">
+                    Add Comment
+                </button>
+
+
+                <p id="commentMessage" class="form-message"></p>
+
+            </div>
+
+
+            <!-- LOGIN MESSAGE -->
+
+            <p id="loginCommentMessage" class="comment-login-message" style="display: none;">
+
+                Please
+                <a href="login.html">
+                    login
+                </a>
+                to leave a comment.
+
+            </p>
+
+
+            <!-- COMMENTS -->
+
+            <div id="commentsContainer" class="comments-list">
+
+                <p class="loading">
+                    Loading comments...
+                </p>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <footer>
+
+        <p>
+            © 2026 BlogSpace. All rights reserved.
+        </p>
+
+    </footer>
+
+
+    <script>
+
+        const API_URL =
+            "http://localhost:3000";
+
+
+        // ==============================
+        // AUTH
+        // ==============================
+
+        const token =
+            localStorage.getItem("token");
+
+        const userData =
+            localStorage.getItem("user");
+
+
+        const loginLink =
+            document.getElementById(
+                "loginLink"
+            );
+
+        const signupLink =
+            document.getElementById(
+                "signupLink"
+            );
+
+        const logoutBtn =
+            document.getElementById(
+                "logoutBtn"
+            );
+
+
+        if (token && userData) {
+
+            loginLink.style.display =
+                "none";
+
+            signupLink.style.display =
+                "none";
+
+            logoutBtn.style.display =
+                "inline-block";
+
+        }
+
+
+        // ==============================
+        // LOGOUT
+        // ==============================
+
+        logoutBtn.addEventListener(
+            "click",
+            () => {
+
+                sessionStorage.setItem(
+                    "logoutMessage",
+                    "Logged out successfully!"
+                );
+
+
+                localStorage.removeItem(
+                    "token"
+                );
+
+                localStorage.removeItem(
+                    "user"
+                );
+
+
+                window.location.href =
+                    "login.html";
+
+            }
+        );
+
+
+        // ==============================
+        // POST ID
+        // ==============================
+
+        const params =
+            new URLSearchParams(
+                window.location.search
+            );
+
+
+        const postId =
+            params.get("id");
+
+
+        const postContainer =
+            document.getElementById(
+                "postContainer"
+            );
+
+
+        const commentsContainer =
+            document.getElementById(
+                "commentsContainer"
+            );
+
+
+        // ==============================
+        // LOAD POST
+        // ==============================
+
+        async function loadPost() {
+
+            if (!postId) {
+
+                postContainer.innerHTML = `
+                    <div class="empty-state">
+
+                        <h3>
+                            Post not found
+                        </h3>
+
+                        <p>
+                            No post ID was provided.
+                        </p>
+
+                    </div>
+                `;
+
+                commentsContainer.innerHTML = `
+                    <div class="empty-state">
+
+                        <p>
+                            Comments cannot be loaded
+                            without a post.
+                        </p>
+
+                    </div>
+                `;
+
+                return;
+
+            }
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        `${API_URL}/posts/${postId}`
+                    );
+
+
+                const post =
+                    await response.json();
+
+
+                if (!response.ok) {
+
+                    postContainer.innerHTML = `
+                        <div class="empty-state">
+
+                            <h3>
+                                Post not found
+                            </h3>
+
+                            <p>
+                                This post may have been deleted.
+                            </p>
+
+                        </div>
+                    `;
+
+                    return;
+
+                }
+
+
+                document.title =
+                    `BlogSpace - ${post.title}`;
+
+
+                postContainer.innerHTML = `
+
+                    <div class="post-header">
+
+                        <p class="tagline">
+                            BLOG STORY
+                        </p>
+
+
+                        <h1>
+                            ${escapeHTML(
+                    post.title
+                )}
+                        </h1>
+
+
+                        <p class="post-author">
+                            By ${escapeHTML(
+                    post.userId?.name ||
+                    "Unknown Author"
+                )
+                    }
+                        </p>
+
+
+                        <p class="post-date">
+                            ${new Date(
+                        post.createdAt
+                    ).toLocaleDateString()
+                    }
+                        </p>
+
+                    </div>
+
+
+                    <div class="post-content">
+
+                        ${post.content
+                        .split("\n")
+                        .map(
+                            paragraph =>
+                                `<p>${escapeHTML(
+                                    paragraph
+                                )}</p>`
+                        )
+                        .join("")
+                    }
+
+                    </div>
+
+
+                    <a
+                        href="index.html"
+                        class="back-link"
+                    >
+                        ← Back to all posts
+                    </a>
+
+                `;
+
+
+                loadComments();
+
+
+                if (token && userData) {
+
+                    loadPostsForSelect();
+
+                }
+
+
+            } catch (error) {
+
+                console.error(error);
+
+                postContainer.innerHTML = `
+                    <div class="empty-state">
+
+                        <h3>
+                            Unable to load post
+                        </h3>
+
+                        <p>
+                            Please make sure the
+                            backend server is running.
+                        </p>
+
+                    </div>
+                `;
+
+            }
+
+        }
+
+
+        // ==============================
+        // LOAD COMMENTS
+        // ==============================
+
+        async function loadComments() {
+
+            if (!postId) {
+                return;
+            }
+
+
+            commentsContainer.innerHTML = `
+                <p class="loading">
+                    Loading comments...
+                </p>
+            `;
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        `${API_URL}/comments/${postId}`
+                    );
+
+
+                const comments =
+                    await response.json();
+
+
+                if (!response.ok) {
+
+                    commentsContainer.innerHTML = `
+                        <div class="empty-state">
+
+                            <p>
+                                Unable to load comments.
+                            </p>
+
+                        </div>
+                    `;
+
+                    return;
+
+                }
+
+
+                if (!comments.length) {
+
+                    commentsContainer.innerHTML = `
+                        <div class="empty-state">
+
+                            <p>
+                                No comments yet.
+                                Be the first to comment.
+                            </p>
+
+                        </div>
+                    `;
+
+                    return;
+
+                }
+
+
+                const currentUser =
+                    userData
+                        ? JSON.parse(userData)
+                        : null;
+
+
+                commentsContainer.innerHTML =
+                    comments.map(comment => {
+
+                        const isOwner =
+                            currentUser &&
+                            comment.userId?._id ===
+                            currentUser.id;
+
+
+                        return `
+
+                            <div
+                                class="comment-card"
+                            >
+
+                                <div
+                                    class="comment-header"
+                                >
+
+                                    <strong>
+                                        ${escapeHTML(
+                            comment.userId?.name ||
+                            "Unknown User"
+                        )
+                            }
+                                    </strong>
+
+
+                                    <span>
+                                        ${new Date(
+                                comment.createdAt
+                            ).toLocaleString()
+                            }
+                                    </span>
+
+                                </div>
+
+
+                                <p
+                                    class="comment-content"
+                                >
+                                    ${escapeHTML(
+                                comment.content
+                            )
+                            }
+                                </p>
+
+
+                                ${isOwner
+                                ? `
+                                            <button
+                                                type="button"
+                                                class="delete-comment-btn"
+                                                data-id="${comment._id}"
+                                            >
+                                                Delete
+                                            </button>
+                                          `
+                                : ""
+                            }
+
+                            </div>
+
+                        `;
+
+                    }).join("");
+
+
+                attachDeleteEvents();
+
+
+            } catch (error) {
+
+                console.error(error);
+
+
+                commentsContainer.innerHTML = `
+                    <div class="empty-state">
+
+                        <p>
+                            Unable to load comments.
+                        </p>
+
+                    </div>
+                `;
+
+            }
+
+        }
+
+
+        // ==============================
+        // LOAD POSTS FOR SELECT
+        // ==============================
+
+        async function loadPostsForSelect() {
+
+            const postSelectContainer =
+                document.getElementById(
+                    "postSelectContainer"
+                );
+
+
+            const postSelect =
+                document.getElementById(
+                    "postSelect"
+                );
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        `${API_URL}/posts`
+                    );
+
+
+                const posts =
+                    await response.json();
+
+
+                if (!response.ok) {
+                    return;
+                }
+
+
+                postSelect.innerHTML = `
+                    <option value="">
+                        Select a post
+                    </option>
+                `;
+
+
+                posts.forEach(post => {
+
+                    const option =
+                        document.createElement(
+                            "option"
+                        );
+
+
+                    option.value =
+                        post._id;
+
+
+                    option.textContent =
+                        post.title;
+
+
+                    if (post._id === postId) {
+
+                        option.selected =
+                            true;
+
+                    }
+
+
+                    postSelect.appendChild(
+                        option
+                    );
+
+                });
+
+
+                postSelectContainer.style.display =
+                    "block";
+
+
+                setupCommentForm();
+
+            } catch (error) {
+
+                console.error(error);
+
+            }
+
+        }
+
+
+        // ==============================
+        // COMMENT FORM
+        // ==============================
+
+        function setupCommentForm() {
+
+            const commentFormContainer =
+                document.getElementById(
+                    "commentFormContainer"
+                );
+
+
+            const loginCommentMessage =
+                document.getElementById(
+                    "loginCommentMessage"
+                );
+
+
+            const postSelect =
+                document.getElementById(
+                    "postSelect"
+                );
+
+
+            if (!token || !userData) {
+
+                loginCommentMessage.style.display =
+                    "block";
+
+                return;
+
+            }
+
+
+            commentFormContainer.style.display =
+                "block";
+
+
+            postSelect.addEventListener(
+                "change",
+                () => {
+
+                    if (!postSelect.value) {
+                        return;
+                    }
+
+
+                    if (
+                        postSelect.value !==
+                        postId
+                    ) {
+
+                        window.location.href =
+                            `post.html?id=${postSelect.value}`;
+
+                    }
+
+                }
+            );
+
+        }
+
+
+        // ==============================
+        // ADD COMMENT
+        // ==============================
+
+        const addCommentBtn =
+            document.getElementById(
+                "addCommentBtn"
+            );
+
+
+        const commentInput =
+            document.getElementById(
+                "commentInput"
+            );
+
+
+        const commentMessage =
+            document.getElementById(
+                "commentMessage"
+            );
+
+
+        addCommentBtn.addEventListener(
+            "click",
+            async () => {
+
+                const selectedPostId =
+                    document.getElementById(
+                        "postSelect"
+                    ).value;
+
+
+                const content =
+                    commentInput.value.trim();
+
+
+                if (!selectedPostId) {
+
+                    commentMessage.textContent =
+                        "Please select a post.";
+
+                    commentMessage.className =
+                        "form-message error";
+
+                    return;
+
+                }
+
+
+                if (!content) {
+
+                    commentMessage.textContent =
+                        "Please write a comment.";
+
+                    commentMessage.className =
+                        "form-message error";
+
+                    return;
+
+                }
+
+
+                try {
+
+                    const response =
+                        await fetch(
+                            `${API_URL}/comments/${selectedPostId}`,
+                            {
+                                method: "POST",
+
+                                headers: {
+                                    "Content-Type":
+                                        "application/json",
+
+                                    "Authorization":
+                                        `Bearer ${token}`
+                                },
+
+                                body: JSON.stringify({
+                                    content
+                                })
+                            }
+                        );
+
+
+                    const data =
+                        await response.json();
+
+
+                    if (!response.ok) {
+
+                        commentMessage.textContent =
+                            data.message ||
+                            "Failed to add comment.";
+
+                        commentMessage.className =
+                            "form-message error";
+
+                        return;
+
+                    }
+
+
+                    commentInput.value =
+                        "";
+
+
+                    commentMessage.textContent =
+                        "Comment added successfully!";
+
+                    commentMessage.className =
+                        "form-message success";
+
+
+                    if (
+                        selectedPostId ===
+                        postId
+                    ) {
+
+                        loadComments();
+
+                    } else {
+
+                        window.location.href =
+                            `post.html?id=${selectedPostId}`;
+
+                    }
+
+                } catch (error) {
+
+                    console.error(error);
+
+
+                    commentMessage.textContent =
+                        "Unable to connect to server.";
+
+                    commentMessage.className =
+                        "form-message error";
+
+                }
+
+            }
+        );
+
+
+        // ==============================
+        // DELETE COMMENT
+        // ==============================
+
+        function attachDeleteEvents() {
+
+            const deleteButtons =
+                document.querySelectorAll(
+                    ".delete-comment-btn"
+                );
+
+
+            deleteButtons.forEach(button => {
+
+                button.addEventListener(
+                    "click",
+                    async () => {
+
+                        const commentId =
+                            button.dataset.id;
+
+
+                        const confirmed =
+                            confirm(
+                                "Delete this comment?"
+                            );
+
+
+                        if (!confirmed) {
+                            return;
+                        }
+
+
+                        try {
+
+                            const response =
+                                await fetch(
+                                    `${API_URL}/comments/${commentId}`,
+                                    {
+                                        method: "DELETE",
+
+                                        headers: {
+                                            "Authorization":
+                                                `Bearer ${token}`
+                                        }
+                                    }
+                                );
+
+
+                            const data =
+                                await response.json();
+
+
+                            if (!response.ok) {
+
+                                alert(
+                                    data.message ||
+                                    "Failed to delete comment."
+                                );
+
+                                return;
+
+                            }
+
+
+                            loadComments();
+
+
+                        } catch (error) {
+
+                            console.error(error);
+
+
+                            alert(
+                                "Unable to connect to server."
+                            );
+
+                        }
+
+                    }
+                );
+
+            });
+
+        }
+
+
+        // ==============================
+        // HTML ESCAPE
+        // ==============================
+
+        function escapeHTML(value) {
+
+            const div =
+                document.createElement(
+                    "div"
+                );
+
+
+            div.textContent =
+                value;
+
+
+            return div.innerHTML;
+
+        }
+
+
+        // ==============================
+        // START
+        // ==============================
+
+        loadPost();
+
+    </script>
+
+</body>
+
+</html>

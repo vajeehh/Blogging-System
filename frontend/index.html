@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BlogSpace - Home</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <header class="navbar">
+
+        <div class="logo">
+            BlogSpace
+        </div>
+
+        <nav id="navbarNav">
+
+            <a href="index.html">
+                Home
+            </a>
+
+            <a href="login.html" id="loginLink">
+                Login
+            </a>
+
+            <a href="signup.html" id="signupLink">
+                Sign Up
+            </a>
+
+            <button type="button" id="logoutBtn" class="nav-btn" style="display: none;">
+                Logout
+            </button>
+
+        </nav>
+
+    </header>
+
+
+    <main class="hero">
+
+        <div class="hero-content">
+
+            <p class="tagline">
+                SHARE • WRITE • INSPIRE
+            </p>
+
+            <h1>
+                Stories Worth<br>
+                <span>Sharing.</span>
+            </h1>
+
+            <p class="hero-text">
+                Discover ideas, experiences and stories from our growing community
+                of writers.
+            </p>
+
+            <a href="signup.html" class="btn" id="startWritingBtn">
+                Start Writing
+            </a>
+
+        </div>
+
+    </main>
+
+
+    <section class="posts-section">
+
+        <div class="section-heading">
+
+            <p class="tagline">
+                LATEST STORIES
+            </p>
+
+            <h2>
+                Explore Our Posts
+            </h2>
+
+        </div>
+
+
+        <div id="postsContainer" class="posts-grid">
+
+            <p class="loading">
+                Loading posts...
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <footer>
+
+        <p>
+            © 2026 BlogSpace. All rights reserved.
+        </p>
+
+    </footer>
+
+
+    <script>
+
+        const API_URL =
+            "http://localhost:3000";
+
+
+        // ==============================
+        // NAVIGATION AUTH STATE
+        // ==============================
+
+        const token =
+            localStorage.getItem("token");
+
+        const user =
+            localStorage.getItem("user");
+
+
+        const loginLink =
+            document.getElementById("loginLink");
+
+        const signupLink =
+            document.getElementById("signupLink");
+
+        const logoutBtn =
+            document.getElementById("logoutBtn");
+
+        const startWritingBtn =
+            document.getElementById(
+                "startWritingBtn"
+            );
+
+
+        // If user is logged in
+        if (token && user) {
+
+            loginLink.style.display =
+                "none";
+
+            signupLink.style.display =
+                "none";
+
+            logoutBtn.style.display =
+                "inline-block";
+
+            startWritingBtn.href =
+                "dashboard.html";
+
+            startWritingBtn.textContent =
+                "Write a Story";
+
+        }
+
+
+        // ==============================
+        // LOGOUT
+        // ==============================
+
+        logoutBtn.addEventListener(
+            "click",
+            () => {
+
+                sessionStorage.setItem(
+                    "logoutMessage",
+                    "Logged out successfully!"
+                );
+
+
+                localStorage.removeItem(
+                    "token"
+                );
+
+                localStorage.removeItem(
+                    "user"
+                );
+
+
+                window.location.href =
+                    "login.html";
+
+            }
+        );
+
+
+        // ==============================
+        // LOAD POSTS
+        // ==============================
+
+        async function loadPosts() {
+
+            const container =
+                document.getElementById(
+                    "postsContainer"
+                );
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        `${API_URL}/posts`
+                    );
+
+
+                const posts =
+                    await response.json();
+
+
+                if (!posts.length) {
+
+                    container.innerHTML = `
+                    <div class="empty-state">
+
+                        <h3>
+                            No posts yet
+                        </h3>
+
+                        <p>
+                            Be the first person
+                            to share a story.
+                        </p>
+
+                    </div>
+                `;
+
+                    return;
+
+                }
+
+
+                container.innerHTML =
+                    posts.map(post => `
+
+                    <article class="post-card">
+
+                        <div class="post-meta">
+                            By ${post.userId?.name ||
+                        "Unknown Author"
+                        }
+                        </div>
+
+
+                        <h3>
+                            ${escapeHTML(
+                            post.title
+                        )}
+                        </h3>
+
+
+                        <p>
+                            ${post.content.length > 140
+                            ? escapeHTML(
+                                post.content.substring(
+                                    0,
+                                    140
+                                )
+                            ) + "..."
+                            : escapeHTML(
+                                post.content
+                            )
+                        }
+                        </p>
+
+
+                        <a
+                            href="post.html?id=${post._id}"
+                            class="read-more"
+                        >
+                            Read More →
+                        </a>
+
+                    </article>
+
+                `).join("");
+
+
+            } catch (error) {
+
+                console.error(error);
+
+
+                container.innerHTML = `
+                <div class="empty-state">
+
+                    <h3>
+                        Unable to load posts
+                    </h3>
+
+                    <p>
+                        Please make sure the
+                        backend server is running.
+                    </p>
+
+                </div>
+            `;
+
+            }
+
+        }
+
+
+        // ==============================
+        // HTML ESCAPE
+        // ==============================
+
+        function escapeHTML(value) {
+
+            const div =
+                document.createElement(
+                    "div"
+                );
+
+
+            div.textContent =
+                value;
+
+
+            return div.innerHTML;
+
+        }
+
+
+        // ==============================
+        // INITIAL LOAD
+        // ==============================
+
+        loadPosts();
+
+    </script>
+
+</body>
+
+</html>
